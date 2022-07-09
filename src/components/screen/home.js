@@ -1,27 +1,24 @@
-import React, { useState, useEffect, Component } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Form,
-  Navbar,
-  NavbarBrand,
   Card,
   Modal,
   ModalFooter,
   ModalTitle,
   Row,
-  Col,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaInfoCircle } from "react-icons/fa";
 import { Api } from "../api/Api";
 import Chart from "react-apexcharts";
 import { ThreeDots } from "react-loader-spinner";
+import Headers from "./header";
 
 export default function Home() {
   const [upload, setUpload] = useState();
   const [preview, setPreview] = useState();
   const [modalShow, setModalShow] = useState(false);
-  const [series, setSeries] = useState([0,0]);
+  const [series, setSeries] = useState([0, 0]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -43,26 +40,26 @@ export default function Home() {
   };
 
   const uploadImage = async () => {
+    if (upload === undefined && preview === undefined) {
+      alert("Kamu Belum Menambah Gambar Batik! :(");
+      return;
+    }
     setModalShow(true);
     setLoading(true);
+
     await Api.post("predict", {
       image: upload,
     })
       .then((res) => {
-        let body = res;
         let status = res.status;
         let data = res.data[0];
         if (status === 200) {
-            console.log(data)
-            console.log(data.Cetak);
-            console.log(data.Tulis);
-            let Cetak = Math.round(data.Cetak*100)
-            let Tulis = Math.round(data.Tulis*100)
-          let setResonse = [
-            Cetak,
-            Tulis
-
-          ]
+          console.log(data);
+          console.log(data.Cetak);
+          console.log(data.Tulis);
+          let Cetak = Math.round(data.Cetak * 100);
+          let Tulis = Math.round(data.Tulis * 100);
+          let setResonse = [Cetak, Tulis];
           setSeries(setResonse);
           console.log(series);
           setLoading(false);
@@ -73,9 +70,9 @@ export default function Home() {
       });
   };
 
-  const hideModal = ()=>{
+  const hideModal = () => {
     setModalShow(false);
-  }
+  };
 
   return (
     <div
@@ -96,25 +93,33 @@ export default function Home() {
         <Modal.Header>
           <ModalTitle>Result Classification</ModalTitle>
         </Modal.Header>
-        <Modal.Body style={{
-            display:'flex',
-        }}>
-      <div style={{
-       position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)"
-      }}>
-      {loading ? (
-            <ThreeDots color="#3F4E4F" height="20" width="100%" />
-          ) : (
-            <Chart
-              type="pie"
-              options={{
-                labels: ["Batik Cetak", "Batik Tulis"]
-              }}
-              series={series}
-            />
-          )}
-      </div>
-      
+        <Modal.Body
+          style={{
+            display: "flex",
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+            }}
+          >
+           
+
+            {loading ? (
+              <ThreeDots color="#3F4E4F" height="20" width="100%" />
+            ) : (
+              <Chart
+                type="pie"
+                style={{
+                  position: "relative",
+                }}
+                options={{
+                  labels: ["Batik Cetak", "Batik Tulis"],
+                }}
+                series={series}
+              />
+            )}
+          </div>
         </Modal.Body>
         <ModalFooter>
           <Row>
@@ -122,39 +127,12 @@ export default function Home() {
           </Row>
         </ModalFooter>
       </Modal>
-
-      <Navbar
-        style={{
-          width: "100%",
-          height: 75,
-          margin: 0,
-          backgroundColor: "#2C3639",
-        }}
-      >
-        <NavbarBrand
-          style={{
-            color: "white",
-            fontWeight: "bold",
-            fontSize: 28,
-            marginLeft: 16,
-          }}
-        >
-          Batik Method Classification
-        </NavbarBrand>
-        <FaInfoCircle
-          style={{
-            color: "white",
-            height: 28,
-            width: 28,
-            marginRight: 32,
-            position: "absolute",
-            right: 0,
-          }}
-        />
-      </Navbar>
+      <Headers />
       <Card
         style={{
           width: "50%",
+          flex: 1,
+          justifyContent: "center",
           backgroundColor: "#DCD7C9",
           position: "absolute",
           top: "20%",
@@ -162,11 +140,7 @@ export default function Home() {
         }}
       >
         <img
-          src={
-            preview
-              ? preview
-              : "https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2021/10/28064854/12.-Tips-Merawat-Anak-Kucing-Munchkin.jpg"
-          }
+          src={preview ? preview : require("../../assets/nice_upload.png")}
           className="img-fluid shadow-4 rounded"
           style={{
             height: "50%",
@@ -180,20 +154,23 @@ export default function Home() {
         <Form
           style={{
             marginBottom: 16,
+            justifyContent: "center",
           }}
         >
           <Form.Group>
-            <Form.Label
-              style={{
-                fontSize: 18,
-                fontWeight: "bold",
-                color: "#2C3639",
-                marginBottom: 16,
-                marginLeft: "40%",
-              }}
-            >
-              Upload Batik Images
-            </Form.Label>
+            <center>
+              <Form.Label
+                style={{
+                  alignSelf: "center",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  color: "#2C3639",
+                  marginBottom: 16,
+                }}
+              >
+                Upload Batik Images
+              </Form.Label>
+            </center>
             <Form.Control
               placeholder="Upload"
               type="file"
@@ -205,20 +182,31 @@ export default function Home() {
               }}
             />
 
-            <Button
-              variant="secondary"
-              onClick={uploadImage}
-              style={{
-                marginTop: 16,
-                color: "#f9f9f9",
-                marginLeft: "40%",
-              }}
-            >
-              Upload & Predict
-            </Button>
+            <center>
+              <Button
+                variant="secondary"
+                onClick={uploadImage}
+                style={{
+                  marginTop: 16,
+                  color: "#f9f9f9",
+                  alignSelf: "center",
+                }}
+              >
+                Upload & Predict
+              </Button>
+            </center>
           </Form.Group>
         </Form>
       </Card>
+      <div style={{
+        position:'absolute',
+        width:'100%',
+        bottom:0,
+        marginBottom:16,
+      }}>
+        
+    <center><h6>Suhaili Faruq&copy;2022</h6></center>
+        </div>
     </div>
   );
 }
