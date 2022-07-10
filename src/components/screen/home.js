@@ -131,7 +131,7 @@ export default function Home() {
       <Card
         style={{
           width: "50%",
-          flex: 1,
+          height:'50%',
           justifyContent: "center",
           backgroundColor: "#DCD7C9",
           position: "absolute",
